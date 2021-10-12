@@ -2,15 +2,23 @@ const path = require("path"); //Esto ya viene en Node
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.js", //De aquí entra todo
   output: {
     path: path.resolve(__dirname, "dist"), //Aquí lo manda
-    filename: "main.js", //En este archivo lo resuelve
+    filename: "[name].[contenthash].js", //En este archivo lo resuelve
   },
   resolve: {
     extensions: [".js"], //Ahora usaremos solo esto
+    alias: {
+      "@utils": path.resolve(__dirname, "src/utils/"),
+      "@templates": path.resolve(__dirname, "src/templates/"),
+      "@styles": path.resolve(__dirname, "src/styles/"),
+      "@images": path.resolve(__dirname, "src/assets/images/"),
+    },
   },
   module: {
     rules: [
@@ -29,6 +37,20 @@ module.exports = {
         test: /\.(png|jpg|svg|jpeg|gif)$/i,
         type: "asset/resource", //generator: {filename: 'static/images/[hash][ext][query]'}  salida
       },
+      {
+        test: /\.(woff|woff2)$/,
+        use: {
+          loader: "url-loader",
+          options: {
+            limit: 10000,
+            mimetype: "application/font-woff", //MIME Type: Standard para enviar contenid en la red
+            name: "[name].[contenthash].[ext]",
+            outputPath: "./assets/fonts/", //Salida en este directorio
+            publicPath: "./assets/fonts/", //Salida en este directorio público
+            esModule: false, //Avisa si es un módulo
+          },
+        },
+      },
     ],
   },
   plugins: [
@@ -37,7 +59,9 @@ module.exports = {
       template: "./public/index.html", //El template que toma como referencia
       filename: "./index.html", //Nombre del archivo que se genera en dist
     }),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "assets/[name].[contenthash].css",
+    }),
     new CopyPlugin({
       patterns: [
         {
@@ -47,4 +71,11 @@ module.exports = {
       ],
     }),
   ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new CssMinimizerPlugin(), //Para CSS
+      new TerserPlugin(), //Para JS
+    ],
+  },
 };
