@@ -1,6 +1,7 @@
 const path = require("path"); //Esto ya viene en Node
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.js", //De aquí entra todo
@@ -22,7 +23,11 @@ module.exports = {
       },
       {
         test: /\.css|.styl$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "stylus-loader"] //Esta configuración depende del plugin en sí
+        use: [MiniCssExtractPlugin.loader, "css-loader", "stylus-loader"], //Esta configuración depende del plugin en sí
+      },
+      {
+        test: /\.(png|jpg|svg|jpeg|gif)$/i,
+        type: "asset/resource", //generator: {filename: 'static/images/[hash][ext][query]'}  salida
       },
     ],
   },
@@ -32,6 +37,14 @@ module.exports = {
       template: "./public/index.html", //El template que toma como referencia
       filename: "./index.html", //Nombre del archivo que se genera en dist
     }),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin(),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, "src", "assets/images"),
+          to: "assets/images",
+        },
+      ],
+    }),
   ],
 };
