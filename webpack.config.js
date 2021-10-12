@@ -21,8 +21,8 @@ module.exports = {
         },
       },
       {
-        test: /\.css| .styl$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "stylus-loader"], //Esta configuración depende del plugin en sí
+        test: /\.css|.styl$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "stylus-loader"] //Esta configuración depende del plugin en sí
       },
     ],
   },
@@ -32,5 +32,6 @@ module.exports = {
       template: "./public/index.html", //El template que toma como referencia
       filename: "./index.html", //Nombre del archivo que se genera en dist
     }),
+    new MiniCssExtractPlugin()
   ],
 };
