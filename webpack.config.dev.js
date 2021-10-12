@@ -2,17 +2,17 @@ const path = require("path"); //Esto ya viene en Node
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')  //Como elemento
 
 module.exports = {
   entry: "./src/index.js", //De aquí entra todo
   output: {
     path: path.resolve(__dirname, "dist"), //Aquí lo manda
     filename: "[name].[contenthash].js", //En este archivo lo resuelve
+    assetModuleFilename: 'assets/images/[hash][ext][query]'
   },
+  mode: 'development',
+  watch: true,
   resolve: {
     extensions: [".js"], //Ahora usaremos solo esto
     alias: {
@@ -73,13 +73,5 @@ module.exports = {
       ],
     }),
     new Dotenv(),
-    new CleanWebpackPlugin(),
   ],
-  optimization: {
-    minimize: true,
-    minimizer: [
-      new CssMinimizerPlugin(), //Para CSS
-      new TerserPlugin(), //Para JS
-    ],
-  },
 };
